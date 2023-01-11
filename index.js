@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
@@ -33,14 +34,14 @@ app.post("/", cors(corsOptions), async (req, res) => {
         port: 587,
         secure: false,
         auth: {
-          user: "marisol58@ethereal.email",
-          pass: "CBMKvaSjZ8mzKqA521",
+          user: `${process.env.SECRET_USER}`,
+          pass: `${process.env.SECRET_PASS}`,
         },
       });
 
       let info = await transporter.sendMail({
         from: `<${email}>`,
-        to: "marisol58@ethereal.email",
+        to: `${process.env.SECRET_TO}`,
         subject: `${subject}`,
         text: `${message}`,
       });
