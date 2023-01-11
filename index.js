@@ -1,35 +1,66 @@
 const express = require("express");
+const cors = require("cors");
+const helmet = require("helmet");
 const nodemailer = require("nodemailer");
 const bodyParser = require("body-parser");
 
 const app = express();
-const PORT = 3000;
+const PORT = 4000;
 
+app.use(cors());
+app.use(helmet());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-app.post("/", async (req, res) => {
-  res.send("Server responding");
-  const { email } = req.body;
+const corsOptions = {
+  origin: "http://localhost:3000",
+};
 
-  let transporter = nodemailer.createTransport({
-    host: "smtp.ethereal.email",
-    port: 587,
-    secure: false,
-    auth: {
-      user: "marisol58@ethereal.email",
-      pass: "CBMKvaSjZ8mzKqA521",
-    },
-  });
+app.post("/", cors(corsOptions), async (req, res) => {
+  const { email, subject, message } = req.body;
+  const emailType = typeof email;
+  const subjectType = typeof subject;
+  const messageType = typeof message;
 
-  let info = await transporter.sendMail({
-    from: '"Fred Foo 👻" <foo@example.com>',
-    to: `${email}`,
-    subject: "Hello ✔",
-    text: "Hello world?",
-  });
+  if (
+    emailType === "string" &&
+    subjectType === "string" &&
+    messageType === "string"
+  ) {
+    async function main() {
+      let transporter = nodemailer.createTransport({
+        host: "smtp.ethereal.email",
+        port: 587,
+        secure: false,
+        auth: {
+          user: "marisol58@ethereal.email",
+          pass: "CBMKvaSjZ8mzKqA521",
+        },
+      });
 
-  console.log("Message sent: %s", info.messageId);
+      let info = await transporter.sendMail({
+        from: `<${email}>`,
+        to: "marisol58@ethereal.email",
+        subject: `${subject}`,
+        text: `${message}`,
+      });
+
+      console.log("Message sent: %s", info.messageId);
+    }
+    try {
+      await main();
+      res.status(204).end();
+    } catch (error) {
+      if (error.responseCode === 535) {
+        res.statusMessage = "SMTP Error";
+        res.status(535).end();
+      } else {
+        res.status(500).end();
+      }
+    }
+  } else {
+    res.status(400).end();
+  }
 });
 
 app.listen(PORT, () => {
