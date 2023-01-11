@@ -19,11 +19,15 @@ const corsOptions = {
 
 app.post("/", cors(corsOptions), async (req, res) => {
   const { email, subject, message } = req.body;
+  const emailRegex =
+    /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  const emailTrue = emailRegex.test(email);
   const emailType = typeof email;
   const subjectType = typeof subject;
   const messageType = typeof message;
 
   if (
+    emailTrue &&
     emailType === "string" &&
     subjectType === "string" &&
     messageType === "string"
