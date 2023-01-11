@@ -34,14 +34,14 @@ app.post("/", cors(corsOptions), async (req, res) => {
         port: 587,
         secure: false,
         auth: {
-          user: `${process.env.SECRET_USER}`,
-          pass: `${process.env.SECRET_PASS}`,
+          user: process.env.SECRET_USER,
+          pass: process.env.SECRET_PASS,
         },
       });
 
       let info = await transporter.sendMail({
         from: `<${email}>`,
-        to: `${process.env.SECRET_TO}`,
+        to: process.env.SECRET_TO,
         subject: `${subject}`,
         text: `${message}`,
       });
