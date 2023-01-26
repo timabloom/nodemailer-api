@@ -34,7 +34,7 @@ app.post("/", cors(corsOptions), async (req, res) => {
   ) {
     async function main() {
       let transporter = nodemailer.createTransport({
-        host: "smtp.ethereal.email",
+        host: "smtp.gmail.com",
         port: 587,
         secure: false,
         auth: {
@@ -44,10 +44,9 @@ app.post("/", cors(corsOptions), async (req, res) => {
       });
 
       let info = await transporter.sendMail({
-        from: `<${email}>`,
-        to: process.env.SECRET_TO,
+        to: `${process.env.SECRET_USER}`,
         subject: `${subject}`,
-        text: `${message}`,
+        text: `Email: ${email}\nMessage: ${message}`,
       });
 
       console.log("Message sent: %s", info.messageId);
