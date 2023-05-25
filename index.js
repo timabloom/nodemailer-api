@@ -8,16 +8,16 @@ const bodyParser = require("body-parser");
 const app = express();
 const PORT = 4000;
 
-app.use(cors());
+const corsOptions = {
+  origin: process.env.CORS_ORIGIN,
+};
+
+app.use(cors(corsOptions));
 app.use(helmet());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-const corsOptions = {
-  origin: "*",
-};
-
-app.post("/", cors(corsOptions), async (req, res) => {
+app.post("/", async (req, res) => {
   const { email, subject, message } = req.body;
   const emailRegex =
     /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -44,7 +44,7 @@ app.post("/", cors(corsOptions), async (req, res) => {
       });
 
       let info = await transporter.sendMail({
-        to: `${process.env.SECRET_USER}`,
+        to: email,
         subject: `${subject}`,
         text: `Email: ${email}\nMessage: ${message}`,
       });
