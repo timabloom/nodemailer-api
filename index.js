@@ -44,7 +44,7 @@ app.post("/", async (req, res) => {
       });
 
       let info = await transporter.sendMail({
-        to: email,
+        to: process.env.SECRET_EMAIL,
         subject: `${subject}`,
         text: `Email: ${email}\nMessage: ${message}`,
       });
